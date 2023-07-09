@@ -1,0 +1,19 @@
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      table-prefix: pika_
+server:
+  port: 9001
+spring:
+  application:
+    name: pika-lowcoding-generate
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: 123456
+    url: jdbc:mysql://localhost:3306/pika-lowcoding?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    username: root
+generate:
+  default-pkg: com.pika.web
+  root-path: F:\Develop\Java\pika-lowcoding\pika-lowcoding-cloud\web\src\main\java

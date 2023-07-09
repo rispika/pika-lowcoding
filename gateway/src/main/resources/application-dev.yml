@@ -1,0 +1,28 @@
+server:
+    port: 9999
+    servlet:
+        context-path: /dev-api
+spring:
+    application:
+        name: pika-lowcoding-gateway
+    cloud:
+        gateway:
+            routes:
+                - id: api-generate
+                  uri: http://127.0.0.1:9001
+                  predicates:
+                      - Path=/generate/**
+                  filters:
+                      - StripPrefix=1
+                - id: api-system
+                  uri: http://127.0.0.1:9000
+                  predicates:
+                      - Path=/system/**
+                  filters:
+                    - StripPrefix=1
+                - id: api-web
+                  uri: http://127.0.0.1:8888
+                  predicates:
+                    - Path=/web/**
+                  filters:
+                    - StripPrefix=1
