@@ -23,9 +23,11 @@ public class RouterController {
     @ApiOperation(value = "获取其路由信息", notes = "根据权限判断获取其路由信息", tags = "路由操作")
     @GetMapping("/pikaMenuAdmin/{page}/{size}")
     public R pikaMenuAdmin(@ApiParam(value = "当前页", required = true) @PathVariable Long page,
-                           @ApiParam(value = "大小", required = true) @PathVariable Long size) {
+                           @ApiParam(value = "大小", required = true) @PathVariable Long size,
+                           @ApiParam(value = "路由名称") @RequestParam(required = false) String routerName,
+                           @ApiParam(value = "菜单标识") @RequestParam(required = false) Integer routerLevel) {
         // 获取权限
-        return routerService.pikaMenuAdmin(page, size);
+        return routerService.pikaMenuAdmin(page, size, routerName, routerLevel);
     }
 
     @ApiOperation(value = "根据level获取路由信息",tags = "路由操作")
@@ -60,7 +62,6 @@ public class RouterController {
         routerService.removeById(id);
         return R.ok();
     }
-
 
     @ApiOperation(value = "获取侧边栏动态路由", tags = "路由操作")
     @GetMapping("/pikaMenu")

@@ -9,8 +9,22 @@ server:
 spring:
   application:
     name: pika-lowcoding-system
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    connect-timeout: 5000
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     password: 123456
     url: jdbc:mysql://localhost:3306/pika-lowcoding?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
     username: root
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+minio:
+  endpoint: http://127.0.0.1:5001 #Minio服务所在地址
+  bucketName: pika-lowcoding #存储桶名称
+  accessKey: pika-admin #访问的key
+  secretKey: pika-admin #访问的秘钥

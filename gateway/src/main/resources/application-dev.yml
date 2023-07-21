@@ -1,28 +1,43 @@
 server:
     port: 9999
-    servlet:
-        context-path: /dev-api
+
 spring:
-    application:
-        name: pika-lowcoding-gateway
-    cloud:
-        gateway:
-            routes:
-                - id: api-generate
-                  uri: http://127.0.0.1:9001
-                  predicates:
-                      - Path=/generate/**
-                  filters:
-                      - StripPrefix=1
-                - id: api-system
-                  uri: http://127.0.0.1:9000
-                  predicates:
-                      - Path=/system/**
-                  filters:
-                    - StripPrefix=1
-                - id: api-web
-                  uri: http://127.0.0.1:8888
-                  predicates:
-                    - Path=/web/**
-                  filters:
-                    - StripPrefix=1
+  cloud:
+    nacos:
+      # nacos注册中心地址，注意：结尾不能带斜杠/
+      discovery:
+        server-addr: 127.0.0.1:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: api-generate
+          uri: lb://pika-lowcoding-generate
+          predicates:
+            - Path=/generate/**
+          filters:
+            - StripPrefix=1
+        - id: api-system
+          uri: lb://pika-lowcoding-system
+          predicates:
+            - Path=/system/**
+          filters:
+            - StripPrefix=1
+        - id: api-web
+          uri: lb://pika-lowcoding-web
+          predicates:
+            - Path=/web/**
+          filters:
+            - StripPrefix=1
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: 123456
+    url: jdbc:mysql://localhost:3306/pika-lowcoding?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    username: root
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    connect-timeout: 5000

@@ -21,6 +21,10 @@ public class R {
         return r;
     }
 
+    public static R ok(String msg) {
+        return R.ok(200, msg);
+    }
+
     public static R ok(Integer code) {
         R r = new R();
         r.code = code;
@@ -49,6 +53,10 @@ public class R {
         r.code = code;
         r.msg = msg;
         return r;
+    }
+
+    public static R fail(String msg) {
+        return R.fail(500, msg);
     }
 
 }

@@ -3,6 +3,7 @@ package com.pika.generate;
 import com.pika.common.utils.Bootstrap;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
@@ -10,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 @MapperScan("com.pika.generate.mapper")
 @ComponentScan(basePackages = {"com.pika.generate","com.pika.common"})
 @SpringBootApplication
+@EnableDiscoveryClient
 public class GenerateApplication {
 
     public static void main(String[] args) {

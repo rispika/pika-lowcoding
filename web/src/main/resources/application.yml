@@ -8,9 +8,14 @@ server:
   port: 8888
 spring:
   application:
-    name: pika-lowcoding-generate
+    name: pika-lowcoding-web
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     password: 123456
     url: jdbc:mysql://localhost:3306/pika-lowcoding?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
     username: root
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+

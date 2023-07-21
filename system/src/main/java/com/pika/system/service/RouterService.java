@@ -5,7 +5,7 @@ import com.pika.common.R;
 import com.pika.system.entity.Router;
 
 public interface RouterService extends IService<Router> {
-    R pikaMenuAdmin(Long page, Long size);
+    R pikaMenuAdmin(Long page, Long size, String routerName, Integer routerLevel);
 
     R pikaMenu();
 

@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
@@ -181,6 +182,18 @@ public class GenerateController {
     @GetMapping("/queryTemplateInfo/{tableId}")
     public R queryTemplateInfo(@ApiParam(value = "sql表id", required = true) @PathVariable Long tableId) {
         return generateTableService.queryTemplateInfo(tableId);
+    }
+
+    /**
+     * 创建表sql文件
+     *
+     * @param file 文件
+     * @return {@link R}
+     */
+    @ApiOperation("根据sql文件创建表")
+    @PostMapping("/createTableBySqlFile")
+    public R createTableBySqlFile(@ApiParam(value = "sql文件",required = true) MultipartFile file) {
+        return generateTableService.createTableBySqlFile(file);
     }
 
 

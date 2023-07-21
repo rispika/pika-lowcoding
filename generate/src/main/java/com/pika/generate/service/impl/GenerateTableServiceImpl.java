@@ -1,6 +1,17 @@
 package com.pika.generate.service.impl;
 
+import cn.hutool.core.io.FastByteArrayOutputStream;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.sql.SqlUtil;
+import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.sql.ast.SQLObject;
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlExportParameterVisitor;
+import com.alibaba.druid.sql.visitor.ExportParameterVisitor;
+import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
+import com.alibaba.druid.stat.TableStat;
+import com.alibaba.druid.util.JdbcConstants;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pika.common.R;
 import com.pika.generate.constant.GenerateType;
@@ -21,13 +32,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,19 +62,6 @@ public class GenerateTableServiceImpl extends ServiceImpl<GenerateTableMapper, G
 
 //    @Value("${generate.templatePath}")
 //    private String templatePath;
-
-//    public static void main(String[] args) throws TemplateException, IOException {
-//        String rootPath = "F:\\Develop\\Java\\pika-lowcoding\\pika-lowcoding-cloud\\generate\\src\\main\\java";
-//        String packageName = "com.pika.generate.entity";
-//        String templatePath = "F:\\Develop\\Java\\pika-lowcoding\\pika-lowcoding-cloud\\generate\\src\\main\\resources\\templates";
-//        String templateName = "entity.ftl";
-//        JavaProperties userEntity = new JavaProperties("UserEntity", packageName);
-//
-//        userEntity.addField(String.class, "username");
-//        userEntity.addField(Integer.class, "gender");
-//        userEntity.addField(Integer.class, "age");
-//        autoCodingJavaEntity(rootPath, templatePath, templateName, userEntity);
-//    }
 
     @Override
     public R generateCode(Long tableId) {
@@ -151,6 +148,37 @@ public class GenerateTableServiceImpl extends ServiceImpl<GenerateTableMapper, G
                 }).collect(Collectors.toList());
         Table table = Table.builder().tableColumns(columns).build();
         return R.ok().data(table);
+    }
+
+    @Override
+    public R createTableBySqlFile(MultipartFile file) {
+        try {
+            FastByteArrayOutputStream read = IoUtil.read(file.getInputStream());
+            String sqlContext = read.toString(StandardCharsets.UTF_8);
+            System.out.println(sqlContext);
+            sqlContext = sqlContext.substring(sqlContext.indexOf("CREATE TABLE"));
+            sqlContext = sqlContext.substring(0, sqlContext.indexOf(";"));
+            //开始解析sql
+            SQLStatement sqlStatement = SQLUtils.parseSingleStatement(sqlContext, JdbcConstants.MYSQL);
+            SchemaStatVisitor statVisitor = SQLUtils.createSchemaStatVisitor(JdbcConstants.MYSQL);
+            sqlStatement.accept(statVisitor);
+            if (statVisitor.getTables().size() != 1 || statVisitor.getColumns().isEmpty()) {
+                log.error("解析sql文件出错!");
+                return R.fail(500, "sql文件解析错误,请检查sql文件后重试!");
+            }
+            for (TableStat.Name tableName : statVisitor.getTables().keySet()) {
+                System.out.println(tableName);
+            }
+            for (TableStat.Column column : statVisitor.getColumns()) {
+                System.out.println("=========================");
+                System.out.println(column.getName());
+                System.out.println(column.getDataType());
+                System.out.println("=========================");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return R.ok();
     }
 
 }

@@ -7,7 +7,7 @@ import com.pika.generate.entity.GenerateCol;
 /**
  * (PikaGenerateCol)表服务接口
  *
- * @author makejava
+ * @author pika
  * @since 2023-07-05 10:01:29
  */
 public interface GenerateColService extends IService<GenerateCol> {

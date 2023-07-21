@@ -1,3 +1,5 @@
 spring:
+    application:
+        name: pika-lowcoding-gateway
     profiles:
         active: dev
