@@ -1,4 +1,4 @@
-package com.pika.gateway.exception;
+package com.pika.common.exception;
 
 
 public class NotFoundToken extends RuntimeException {

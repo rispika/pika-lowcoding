@@ -11,6 +11,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
 
 @Api(tags = "pika_router表相关接口")
 @RestController
@@ -65,8 +69,8 @@ public class RouterController {
 
     @ApiOperation(value = "获取侧边栏动态路由", tags = "路由操作")
     @GetMapping("/pikaMenu")
-    public R pikaMenu() {
-        return routerService.pikaMenu();
+    public R pikaMenu(HttpServletRequest request) {
+        return routerService.pikaMenu(request);
     }
 
     @ApiOperation(value = "获取动态路由信息", tags = "路由操作")

@@ -12,10 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -23,25 +23,41 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.io.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Api(tags = "IO操作类")
 @Controller
 @RequestMapping("io")
 @Slf4j
-public class IoController {
+public class IoController implements InitializingBean {
 
     @Resource
     private MinioUtil minioUtil;
     @Resource
     private OkHttpClient okHttpClient;
+    private Set<String> IMAGE_TYPE_SET;
+    @Override
+    public void afterPropertiesSet() {
+        IMAGE_TYPE_SET = new HashSet<>();
+        IMAGE_TYPE_SET.add(MediaType.IMAGE_GIF_VALUE);
+        IMAGE_TYPE_SET.add(MediaType.IMAGE_JPEG_VALUE);
+        IMAGE_TYPE_SET.add(MediaType.IMAGE_PNG_VALUE);
+    }
 
-    @ApiOperation("上传头像")
-    @PostMapping("/uploadAvatar")
+    /**
+     * 上传图片
+     *
+     * @param file 文件
+     * @return {@link R}
+     */
+    @ApiOperation("上传图片")
+    @PostMapping("/uploadImage")
     @ResponseBody
-    public R uploadAvatar(@ApiParam(required = true, value = "头像文件") @NotNull MultipartFile file) {
+    public R uploadImage(@ApiParam(required = true, value = "图片文件") @NotNull MultipartFile file) {
         String contentType = file.getContentType();
-        if (!contentType.equals("image/jpeg")) {
+        if (IMAGE_TYPE_SET.contains(contentType)) {
             return R.fail(500, "图片格式错误!");
         }
         String upload = minioUtil.upload(file);
@@ -68,7 +84,6 @@ public class IoController {
             Request request = new Request.Builder()
                     .url(imageUrl)
                     .method("GET", null)
-                    .addHeader("User-Agent", "Apifox/1.0.0 (https://apifox.com)")
                     .build();
             Response okRes = okHttpClient.newCall(request).execute();
             byte[] avatarBytes = okRes.body().bytes();
@@ -79,6 +94,5 @@ public class IoController {
         }
 
     }
-
 
 }

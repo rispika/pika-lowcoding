@@ -2,22 +2,31 @@ package com.pika.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.jwt.JWT;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pika.common.R;
+import com.pika.common.constant.RedisConstant;
+import com.pika.common.utils.JwtUtil;
 import com.pika.system.constant.RouterLevel;
 import com.pika.system.entity.Router;
 import com.pika.system.mapper.RouterMapper;
 import com.pika.system.service.RouterService;
 import com.pika.system.dto.RouterDTO;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> implements RouterService {
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
     @Override
     public R pikaMenuAdmin(Long page, Long size, String routerName, Integer routerLevel) {
         LambdaQueryWrapper<Router> wrapper = new LambdaQueryWrapper<>();
@@ -32,9 +41,26 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
     }
 
     @Override
-    public R pikaMenu() {
+    public R pikaMenu(HttpServletRequest request) {
+        String token = request.getHeader("authorization");
+        Map<String, Object> tokenInfo = JwtUtil.getTokenInfo(token);
+        String role = (String) tokenInfo.get("role");
+        Set<Object> members = redisTemplate.opsForSet().members(RedisConstant.PERMISSION_PREFIX + role);
+        if (members == null) {
+            return R.fail("用户权限异常!");
+        }
         List<Router> routers = list();
+        // 权限过滤
+        routers = routers.stream().filter(router -> {
+            for (Object member : members) {
+                if (Pattern.matches((String) member, router.getPath())){
+                    return true;
+                }
+            }
+            return false;
+        }).collect(Collectors.toList());
         // 排除隐藏菜单
+        // 菜单
         Map<Long, List<Router>> routerMap = routers.stream()
                 .filter(router -> router.getLevel() != RouterLevel.LEVEL_HIDDEN)
                 .map(router -> {
@@ -55,8 +81,17 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
                 }
             }
         }
-
-        return R.ok().data("menu", routerDTOS);
+        // 路由菜单
+        List<Map<String, Object>> targetMaps = new ArrayList<>();
+        for (Router router : routers) {
+            Map<String, Object> targetMap = new HashMap<>();
+            targetMap.put("label", router.getLabel());
+            targetMap.put("name", router.getName());
+            targetMap.put("path", router.getPath());
+            targetMap.put("component", router.getComponentUrl());
+            targetMaps.add(targetMap);
+        }
+        return R.ok().data("menu", routerDTOS).data("routers", targetMaps);
     }
 
     @Override
@@ -66,9 +101,9 @@ public class RouterServiceImpl extends ServiceImpl<RouterMapper, Router> impleme
         List<Map<String, Object>> targetMaps = new ArrayList<>();
         for (Router router : routers) {
             Map<String, Object> targetMap = new HashMap<>();
-            targetMap.put("index", router.getIndex());
+            targetMap.put("label", router.getLabel());
             targetMap.put("name", router.getName());
-            targetMap.put("path", router.getTo());
+            targetMap.put("path", router.getPath());
             targetMap.put("component", router.getComponentUrl());
             targetMaps.add(targetMap);
         }

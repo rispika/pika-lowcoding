@@ -1,6 +1,6 @@
 package com.pika.gateway.secutity;
 
-import com.pika.gateway.exception.NotFoundToken;
+import com.pika.common.exception.NotFoundToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;

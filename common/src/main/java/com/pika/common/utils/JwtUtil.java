@@ -1,4 +1,4 @@
-package com.pika.gateway.utils;
+package com.pika.common.utils;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
@@ -6,7 +6,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTPayload;
 import cn.hutool.jwt.JWTUtil;
-import com.pika.gateway.exception.NotFoundToken;
+import com.pika.common.exception.NotFoundToken;
 
 import java.util.HashMap;
 import java.util.Map;

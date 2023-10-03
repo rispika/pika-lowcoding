@@ -1,15 +1,12 @@
 package com.pika.gateway.secutity;
 
 import cn.hutool.core.date.DateField;
-import cn.hutool.core.io.IoUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pika.common.R;
 import com.pika.common.constant.RedisConstant;
-import com.pika.gateway.utils.JwtUtil;
+import com.pika.common.utils.JwtUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * 身份验证成功处理程序

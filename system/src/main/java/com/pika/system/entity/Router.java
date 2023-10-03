@@ -28,17 +28,17 @@ public class Router {
     @TableId(type = IdType.AUTO)
     private Long id;
     @ApiModelProperty(value = "索引(例1-1,2-4)", required = true)
-    @TableField("`index`")
+    @TableField("`label`")
     @NotNull
-    private String index;
+    private String label;
     @ApiModelProperty(value = "路由名称", required = true)
     @TableField("`name`")
     @NotNull
     private String name;
     @ApiModelProperty(value = "路由跳转路径")
-    @TableField("`to`")
+    @TableField("`path`")
     @NotNull
-    private String to;
+    private String path;
     @ApiModelProperty("路由icon")
     private String icon;
     @ApiModelProperty("父路由id")
@@ -49,16 +49,6 @@ public class Router {
     private Integer level;
     @ApiModelProperty("路由组件路径")
     private String componentUrl;
-    @ApiModelProperty("创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-    @ApiModelProperty("修改时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
 
 }
 

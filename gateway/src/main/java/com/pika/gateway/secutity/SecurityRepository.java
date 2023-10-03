@@ -1,7 +1,7 @@
 package com.pika.gateway.secutity;
 
 import com.pika.common.constant.RedisConstant;
-import com.pika.gateway.utils.JwtUtil;
+import com.pika.common.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
